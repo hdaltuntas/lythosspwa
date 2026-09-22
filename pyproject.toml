@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lythosspwa"
+version = "0.1.0"
+description = "Sheet pile wall analysis: limit equilibrium by the free-earth support method, Winkler beam-spring analysis with staged construction and tension-only anchors, seismic earth pressures, and parametric / reliability studies with PDF reporting."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Hasan Deniz Altuntaş", email = "lythosfea@gmail.com" }]
+keywords = [
+    "geotechnical", "sheet pile", "retaining wall", "quay wall", "excavation",
+    "limit equilibrium", "free earth support", "beam spring", "winkler",
+    "subgrade reaction", "mononobe okabe", "coulomb", "earth pressure",
+    "anchor", "reliability", "monte carlo", "civil engineering",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Natural Language :: English",
+    "Natural Language :: Turkish",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+# The program's output is drawings and reports - pressure and internal-force
+# diagrams, the problem schematic, PDFs - so the plotting and reporting
+# libraries are required, not optional. The interface itself needs nothing
+# beyond the standard library.
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "reportlab>=4.0",
+]
+
+[project.optional-dependencies]
+# Word reports, and the spreadsheet export of a study; both formats are offered
+# by the interface only when the corresponding package is installed.
+docx = ["python-docx>=0.8"]
+xlsx = ["openpyxl>=3.0"]
+# Caps the BLAS/OpenMP threads of each study worker; the study runs without it.
+fast = ["threadpoolctl>=3.0"]
+dev = [
+    "pytest>=7.0", "ruff>=0.4", "build>=1.0", "twine>=5.0",
+    "python-docx>=0.8", "openpyxl>=3.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/hdaltuntas/lythosspwa"
+Repository = "https://github.com/hdaltuntas/lythosspwa"
+Issues = "https://github.com/hdaltuntas/lythosspwa/issues"
+Releasing = "https://github.com/hdaltuntas/lythosspwa/blob/main/docs/releasing.md"
+
+[project.scripts]
+lythos-spwa = "lythosspwa.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["lythosspwa*"]
+
+[tool.setuptools.package-data]
+"lythosspwa" = ["section_database.json"]
+"lythosspwa.web" = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+
+# The rule set is named rather than left to the default, which changes with the
+# linter's version: what passes here should keep passing after an upgrade.
+# It is the rules that catch mistakes — undefined names, unused imports, import
+# order, stray whitespace. The line length above and the odd two statements on
+# one line are the house style of the analysis modules, and are left alone.
+[tool.ruff.lint]
+select = ["E4", "E9", "F", "I", "W"]

@@ -1,0 +1,78 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      # The interface is a web page and the figures are drawn off-screen, so
+      # there is no desktop toolkit to install system libraries for.
+      - name: Install the package and its development extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run the tests
+        run: pytest -q
+
+      - name: Lint
+        run: ruff check .
+
+  wheel:
+    # The static files and the section database travel as package data; a wheel
+    # without them serves a blank page, and the tests, which run from the source
+    # tree, would not notice.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build the distribution
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          twine check dist/*
+
+      - name: Install the wheel and use it
+        run: |
+          python -m venv /tmp/check
+          /tmp/check/bin/pip install dist/*.whl
+          /tmp/check/bin/lythos-spwa --version
+          /tmp/check/bin/lythos-spwa example -o /tmp/check.spwa
+          /tmp/check/bin/lythos-spwa run /tmp/check.spwa -o /tmp/check.pdf
+          test -s /tmp/check.pdf
+
+      - name: The interface's files must be inside the wheel
+        run: |
+          /tmp/check/bin/python - <<'PY'
+          import os
+          from lythosspwa.web import server
+          from lythosspwa.config import SECTION_DATABASE
+          for name in ("index.html", "app.js", "style.css"):
+              path = os.path.join(server.STATIC, name)
+              assert os.path.isfile(path), f"{name} is missing from the wheel"
+          assert len(SECTION_DATABASE) > 1, "the section database is missing"
+          print("package data is complete")
+          PY

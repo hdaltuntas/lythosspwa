@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Editors / IDEs
+.vscode/
+.idea/
+.spyderproject
+.spyproject
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output written while trying things out; the curated screenshots live in
+# screenshots/ and reports belong wherever the user asked for them.
+/*.png
+/*.pdf
+/*.docx
+/*.csv
+/*.xlsx
+/report.html
+
+# local project files created while testing
+*.spwa
