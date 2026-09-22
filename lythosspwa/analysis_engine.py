@@ -209,8 +209,13 @@ class RetainingWall:
         fs = factors.get('FS_bending')
         if fy_yield is None:
             raise ValueError(f"Steel grade '{steel_grade}' not in database.")
-        if fs is None or fs <= 1.0:
-            raise ValueError("'FS_bending' must be > 1.0.")
+        # FS = 1.0 means "no factor on bending": the allowable stress is f_y
+        # itself. A reliability study asks for exactly that (study.evaluate
+        # sets every factor to 1.0 when the strengths are unfactored), so only
+        # a factor below 1.0 - which would allow more than the yield stress -
+        # is refused.
+        if fs is None or fs < 1.0:
+            raise ValueError("'FS_bending' must be >= 1.0.")
         self.f_allowable = fy_yield / fs
         self.selected_steel_grade = steel_grade
         self.fy_yield = fy_yield

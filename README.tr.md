@@ -54,6 +54,13 @@ pip install numpy scipy matplotlib reportlab
 python main.py
 ```
 
+`main.py`, kendi dizinini içe aktarma yolunun başına koyar; bu yüzden
+`lythosspwa` PyPI'dan da kurulu olsa bile klondaki kod çalışır. Thonny gibi bir
+düzenleyici bu durumda klasörün "`lythosspwa` kütüphane modülünü gölgelediği"
+uyarısını verebilir — klondan çalıştırırken istenen düzen budur, ortada bir
+sorun yoktur; kurulu kopyayı kullanmak için `lythos-spwa` komutunu başka bir
+dizinden çalıştırın.
+
 Python 3.10+ gerekir. Word raporu için `python-docx`, çalışma sonuçlarının hesap tablosu
 dışa aktarımı için `openpyxl` gerekir; ikisi de isteğe bağlıdır
 (`pip install "lythosspwa[docx,xlsx]"`) ve arayüz bu biçimleri yalnızca kuruluysa sunar.
@@ -160,7 +167,7 @@ tamamlanarak açılır.
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                 # 99 test: motor, kiriş-yay, rapor, çalışma, formlar, web, paketleme
+pytest -q                 # 106 test: motor, kiriş-yay, rapor, çalışma, formlar, web, paketleme
 ruff check .
 ```
 

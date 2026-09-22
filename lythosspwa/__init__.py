@@ -34,7 +34,7 @@ Package layout
 Run it:  lythos-spwa            (or  python -m lythosspwa)
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 APP_NAME = "Lythos SPWA"
 ORG = "Lythos"

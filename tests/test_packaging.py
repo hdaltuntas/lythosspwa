@@ -11,6 +11,8 @@ what is checked here.
 import os
 import re
 
+import pytest
+
 import lythosspwa
 from lythosspwa import cli, forms
 from lythosspwa.config import SECTION_DATABASE
@@ -85,3 +87,93 @@ def test_the_optional_formats_are_optional():
         assert not re.search(rf'^\s*"{name}>=[^"]*",\s*$',
                              text.split("[project.optional-dependencies]")[0],
                              re.MULTILINE), f"{name} must not be a hard dependency"
+
+
+# --------------------------------------------------------------------------- #
+#  Regressions fixed in 0.1.1
+# --------------------------------------------------------------------------- #
+
+def test_the_bare_command_starts_the_interface(monkeypatch):
+    """`lythos-spwa` with no subcommand is the documented way to start it."""
+    started = {}
+
+    def fake_serve(host, port, open_browser, lang):
+        started.update(host=host, port=port, open_browser=open_browser, lang=lang)
+
+    import lythosspwa.web.server as server_module
+    monkeypatch.setattr(server_module, "serve", fake_serve)
+    assert cli.main([]) == 0
+    assert started == {"host": "127.0.0.1", "port": cli.PORT,
+                       "open_browser": True, "lang": "en"}
+
+
+def test_the_web_subcommand_still_takes_its_options(monkeypatch):
+    started = {}
+
+    def fake_serve(host, port, open_browser, lang):
+        started.update(host=host, port=port, open_browser=open_browser, lang=lang)
+
+    import lythosspwa.web.server as server_module
+    monkeypatch.setattr(server_module, "serve", fake_serve)
+    assert cli.main(["web", "--host", "0.0.0.0", "--port", "9000",
+                     "--lang", "tr", "--no-browser"]) == 0
+    assert started == {"host": "0.0.0.0", "port": 9000,
+                       "open_browser": False, "lang": "tr"}
+
+
+def test_a_refused_analysis_prints_a_message_not_a_traceback(tmp_path, capsys):
+    """The engine's refusals are sentences meant to be read by the engineer."""
+    import json
+
+    values = forms.defaults()
+    # An anchor just above the dredge line breaks the free-earth assumption.
+    values["excavation_depth_H"] = 9.0
+    values["anchors"] = [dict(values["anchors"][0], depth=8.0)]
+    path = tmp_path / "impossible.spwa"
+    path.write_text(json.dumps(forms.project_file(values)), encoding="utf-8")
+
+    assert cli.main(["run", str(path)]) == 1
+    captured = capsys.readouterr()
+    assert "Lythos SPWA:" in captured.err
+    assert "free-earth" in captured.err.lower() or "anchor" in captured.err.lower()
+    assert "Traceback" not in captured.err
+
+
+def test_a_missing_project_file_is_reported_plainly(tmp_path, capsys):
+    assert cli.main(["run", str(tmp_path / "nothing.spwa")]) == 1
+    assert "Traceback" not in capsys.readouterr().err
+
+
+def test_unfactored_strengths_are_analysable():
+    """A reliability study sets every factor to 1.0; that must be allowed."""
+    from lythosspwa.analysis_engine import AnalysisEngine, RetainingWall
+
+    cfg = forms.to_config(forms.defaults())
+    cfg["factors"].update(FS_friction_angle=1.0, FS_cohesion=1.0, FS_bending=1.0)
+    wall = RetainingWall(cfg)
+    assert wall.f_allowable == wall.fy_yield       # no factor on bending
+    engine = AnalysisEngine(wall)
+    engine.run()
+    assert engine.d_required > 0
+
+
+def test_a_bending_factor_below_one_is_still_refused():
+    from lythosspwa.analysis_engine import RetainingWall
+
+    cfg = forms.to_config(forms.defaults())
+    cfg["factors"]["FS_bending"] = 0.8
+    with pytest.raises(ValueError, match="FS_bending"):
+        RetainingWall(cfg)
+
+
+def test_an_unfactored_study_produces_results():
+    """The study's 'unfactored strengths' option used to fail every sample."""
+    from lythosspwa.study import Study, StudyVariable
+
+    study = Study(forms.to_config(forms.defaults()),
+                  [StudyVariable("soil_profile.0.phi", "dist", dist="normal",
+                                 mean=38.0, cov=0.05, label="phi")],
+                  method="lhs", n=4, run_bs=False, unfactored=True, seed=1, workers=1)
+    rows = study.run()
+    assert rows and all(row["ok"] for row in rows), \
+        [row["error"] for row in rows if not row["ok"]]

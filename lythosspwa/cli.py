@@ -19,6 +19,10 @@ def main(argv=None) -> int:
                     "Winkler beam-spring with staged construction, and parametric / "
                     "reliability studies.")
     parser.add_argument("--version", action="version", version=f"{APP_NAME} {__version__}")
+    # Running the program with no subcommand means "web", so the top level
+    # carries that subcommand's defaults: without them the bare `lythos-spwa`
+    # would reach serve() with a Namespace that has no host, port or language.
+    parser.set_defaults(host="127.0.0.1", port=PORT, lang="en", no_browser=False)
     sub = parser.add_subparsers(dest="command")
 
     web = sub.add_parser("web", help="start the interface in a browser")
@@ -43,7 +47,19 @@ def main(argv=None) -> int:
 
     args = parser.parse_args(argv)
     command = args.command or "web"
+    try:
+        return _dispatch(command, args)
+    except (ValueError, RuntimeError, OSError) as exc:
+        # The analysis refuses impossible input with a sentence worth reading
+        # (an anchor below the dredge line, a missing steel grade, an
+        # unreadable project file). A traceback would bury it, so only
+        # unexpected failures keep theirs.
+        print(f"{APP_NAME}: {exc}", file=sys.stderr)
+        return 1
 
+
+def _dispatch(command: str, args) -> int:
+    """Runs one command; raises on anything that goes wrong."""
     if command == "web":
         from .web.server import serve
         serve(host=args.host, port=args.port, open_browser=not args.no_browser,

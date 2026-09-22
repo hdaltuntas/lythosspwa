@@ -55,6 +55,13 @@ pip install numpy scipy matplotlib reportlab
 python main.py
 ```
 
+`main.py` puts its own directory first on the import path, so the clone's code
+is what runs even when `lythosspwa` is also installed from PyPI. An editor such
+as Thonny may warn that the folder is "shadowing the library module
+`lythosspwa`" — that is the intended arrangement when you run from a clone, and
+nothing is wrong; to work with the installed copy instead, run `lythos-spwa`
+from any other directory.
+
 Python 3.10+ is required. Word reports need `python-docx` and the spreadsheet export of a
 study needs `openpyxl`; both are extras (`pip install "lythosspwa[docx,xlsx]"`), and the
 interface offers those formats only when they are installed.
@@ -161,7 +168,7 @@ written by SPWA v0.1 (anchor depths only, no kₛ fields) load with the defaults
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                 # 99 tests: engine, beam-spring, report, study, forms, web, packaging
+pytest -q                 # 106 tests: engine, beam-spring, report, study, forms, web, packaging
 ruff check .
 ```
 
