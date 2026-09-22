@@ -183,8 +183,8 @@ PyPI'ya sürüm çıkarmak [docs/releasing.md](docs/releasing.md) içinde anlat�
 Lythos SPWA, masaüstü programı **SPWA**'nın (PyQt6 + Matplotlib) web uygulaması olarak
 yeniden kurulmuş hâlidir: analiz çekirdekleri aynı koddur; Qt arayüzünün yerini yerel bir
 sunucu ile tarayıcı sayfası, Qt tabanlı PDF yazıcısının yerini reportlab almıştır. Artık
-programın hiçbir yeri ekran istemez, PyPI'dan tek komutla kurulur; özgün masaüstü sürümü
-[hdaltuntas/spwa](https://github.com/hdaltuntas/spwa) adresinde durmaktadır.
+programın hiçbir yeri ekran istemez ve PyPI'dan tek komutla kurulur. Bu depo, ayrıca
+yayımlanmayan masaüstü programın yerini alır.
 
 ## Lisans
 

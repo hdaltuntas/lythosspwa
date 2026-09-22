@@ -184,8 +184,8 @@ Releasing to PyPI is described in [docs/releasing.md](docs/releasing.md);
 Lythos SPWA is the desktop program **SPWA** (PyQt6 + Matplotlib) rebuilt as a web
 application: the analysis cores are the same code, while the Qt interface has been replaced
 by a local server and a browser page, and the Qt-based PDF writer by reportlab. Nothing in
-the program needs a display any more, it installs from PyPI in one command, and the
-original desktop version remains at [hdaltuntas/spwa](https://github.com/hdaltuntas/spwa).
+the program needs a display any more, and it installs from PyPI in one command. This
+repository supersedes the desktop program, which is no longer published separately.
 
 ## License
 
