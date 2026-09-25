@@ -188,7 +188,16 @@ yayımlanmayan masaüstü programın yerini alır.
 
 ## Lisans
 
-[MIT](LICENSE) © 2025 Hasan Deniz Altuntaş
+Telif hakkı © 2025 Hasan Deniz Altuntaş
+
+Lythos SPWA özgür yazılımdır: Özgür Yazılım Vakfı'nın yayımladığı
+[GNU Affero Genel Kamu Lisansı, sürüm 3](LICENSE) koşulları altında yeniden dağıtabilir ve/veya
+değiştirebilirsiniz. Yararlı olması umuduyla dağıtılır, ancak HİÇBİR GARANTİSİ YOKTUR;
+SATILABİLİRLİK ya da BELİRLİ BİR AMACA UYGUNLUK zımni garantisi dahi yoktur.
+
+Değiştirilmiş bir sürümü kullanıcılara ağ üzerinden sunan, o sürümün kaynak kodunu da onlara
+sunmak zorundadır (lisansın 13. bölümü). Bu değişiklikten önce yayımlanan sürümler MIT
+lisansıyla dağıtılmıştır ve o lisansla kullanılmaya devam edebilir.
 
 ## Yazar
 

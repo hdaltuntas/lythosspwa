@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The licence changes from MIT to the GNU Affero General Public License, version 3
+  (`AGPL-3.0-only`). Versions already published keep the MIT licence they were released under.
+
 ## 0.1.1
 
 Three fixes, all found while working through the program as a user would.
